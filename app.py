@@ -6,7 +6,7 @@ selection = st.sidebar.radio("Go to", ["Home", "Calculator", "To-Do List"])
 
 # --- Home Section ---
 if selection == "Home":
-    st.title("Simple Utility Tool 🛠️")
+    st.title("Simple Utility Tool 🛠️ - Main Branch Edition")
     st.subheader("Welcome to the Streamlit Utility App!")
     st.write("""
     This app demonstrates version control and release management for a simple Python utility tool. 
