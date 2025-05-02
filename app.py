@@ -1,4 +1,5 @@
 import streamlit as st
+from datetime import datetime
 
 # --- Sidebar Navigation ---
 st.sidebar.title("Navigation")
@@ -66,22 +67,49 @@ elif selection == "To-Do List":
     if "tasks" not in st.session_state:
         st.session_state.tasks = []
 
-    new_task = st.text_input("Enter a new task")
-    if st.button("Add Task"):
-        if new_task:
-            st.session_state.tasks.append({"task": new_task, "done": False})
-            st.success("Task added!")
-        else:
-            st.warning("Please enter a task before adding.")
+    with st.form("task_form", clear_on_submit=True):
+        task_text = st.text_input("Enter a new task")
+        priority = st.selectbox("Priority",["Low", "Medium", "High"])
+        submitted = st.form_submit_button("Add Task")
+        if submitted and task_text:
+            st.session_state.tasks.append({
+                "task": task_text,
+                "priority": priority,
+                "done": False,
+                "created": datetime.now()
+            })
+            st.success("✅ Task added successfully")
 
-    st.subheader("Your Tasks")
-    updated_tasks = []
+    st.subheader("📋 Your Tasks")
     for i, task in enumerate(st.session_state.tasks):
-        is_done = st.checkbox(task["task"], value=task["done"], key=f"task_{i}")
-        updated_tasks.append({"task": task["task"], "done": is_done})
+        cols = st.columns([0.05, 0.65, 0.15, 0.15])
+        done = cols[0].checkbox("", value=task["done"], key=f"done_{i}")
+        cols[1].markdown(
+            f"""
+            <div style="padding: 5px;">
+                <b>{task['task']}</b>
+                <span style="font-size:12px;color:gray;">({task['priority']})</span><br>
+                <span style="font-size:11px;color:#888;">Added: {task['created'].strftime('%Y-%m-%d %H:%M:%S')}</span>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        delete = cols[2].button("🗑️", key=f"del_{i}")
+        edit = cols[3].button("✏️", key=f"edit_{i}")
+        st.session_state.tasks[i]["done"] = done
+        if delete:
+            st.session_state.tasks.pop(i)
+            st.rerun()
 
-    st.session_state.tasks = updated_tasks
+        if edit:
+            new_text = st.text_input("Edit task", task["task"], key=f"edit_input_{i}")
+            if st.button("Save", key=f"save_{i}"):
+                st.session_state.tasks[i]["task"] = new_text
+                st.rerun()
+                
 
-    if st.button("Clear Completed Tasks"):
+
+
+    if st.button("🧹 Clear Completed Tasks"):
         st.session_state.tasks = [t for t in st.session_state.tasks if not t["done"]]
-        st.success("Completed tasks removed.")
+        st.success("Completed tasks cleared.")
