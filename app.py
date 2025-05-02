@@ -27,7 +27,7 @@ elif selection == "Calculator":
     num1 = st.number_input("Enter first number", step=1.0)
     num2 = st.number_input("Enter second number", step=1.0)
 
-    operation = st.selectbox("Select operation", ["Add", "Subtract", "Multiply", "Divide"])
+    operation = st.selectbox("Select operation", ["Add", "Subtract", "Multiply", "Divide", "Power"])
 
     result = None
     if st.button("Calculate"):
@@ -37,6 +37,8 @@ elif selection == "Calculator":
             result = num1 - num2
         elif operation == "Multiply":
             result = num1 * num2
+        elif operation == "Power":
+            result = num1**num2
         elif operation == "Divide":
             if num2 != 0:
                 result = num1 / num2
@@ -44,7 +46,16 @@ elif selection == "Calculator":
                 st.error("Division by zero is not allowed.")
         
         if result is not None:
-            st.success(f"Result: {result}")
+            st.markdown(
+                f"""
+                <div style="background-color:#1f375e;padding:10px;border-radius:5px;border:1px solid #d0e9c6;">
+                <h4> ✅ Result: {result}</h4>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            
+    
 
 # --- To-Do List Section ---
 elif selection == "To-Do List":
